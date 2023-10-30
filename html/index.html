@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+
+<div id="tree-container"></div>
+
+<script>
+// 示例数据，您需要根据实际情况进行替换
+var data = {
+    name: "Root",
+    children: [
+        {
+            name: "Type1 Node",
+            image: "E:\project\大数据分析实战\vastChalleng\egonet\img\企业.png"
+        },
+        {
+            name: "Type2 Node",
+            image: "E:\project\大数据分析实战\vastChalleng\egonet\img\个人.png"
+        },
+        // 添加更多节点类型
+    ]
+};
+
+// 创建一个 SVG 元素
+var svg = d3.select("#tree-container").append("svg")
+    .attr("width", 800)
+    .attr("height", 400);
+
+var g = svg.append("g").attr("transform", "translate(50,50)");
+
+// 创建一个树状层级布局
+var tree = d3.tree()
+    .size([700, 300]);
+
+var root = d3.hierarchy(data);
+tree(root);
+
+// 添加节点
+var nodes = g.selectAll("g.node")
+    .data(root.descendants())
+    .enter()
+    .append("g")
+    .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+// 添加节点图像
+nodes.append("image")
+    .attr("xlink:href", function(d) { return d.data.image; }) // 设置图像路径
+    .attr("x", -20) // 图像位置
+    .attr("y", -20)
+    .attr("width", 40) // 图像大小
+    .attr("height", 40);
+
+// 添加节点文本
+nodes.append("text")
+    .attr("dy", "0.3em")
+    .attr("text-anchor", "middle")
+    .text(function(d) { return d.data.name; });
+
+// 添加连接线
+var links = g.selectAll("path.link")
+    .data(root.links())
+    .enter()
+    .append("path")
+    .attr("class", "link")
+    .attr("d", function(d) {
+        return "M" + d.source.x + "," + d.source.y +
+               "C" + d.source.x + "," + (d.source.y + d.target.y) / 2 +
+               " " + d.target.x + "," + (d.source.y + d.target.y) / 2 +
+               " " + d.target.x + "," + d.target.y;
+    });
+</script>
+</body>
+</html>
